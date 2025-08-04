@@ -31,6 +31,31 @@ It's important to understand the characteristics of the monocular depth estimati
 *   **Versatility**: The chosen model supports both indoor and outdoor environments.
 <img width="679" height="831" alt="image" src="https://github.com/user-attachments/assets/0abfb9fd-5e69-461b-96b4-b5bf8e3f9c5e" />
 
+
+## Triangle-Based Alignment Strategy
+
+Before scanning, the drone must perform an initial alignment to position itself correctly at the start of the first scan line. This is achieved in a single "one-shot" maneuver without the need for external markers.
+
+<img width="591" height="388" alt="image" src="https://github.com/user-attachments/assets/879894a4-8af4-4760-814f-81a28332e9f0" />
+
+<img width="804" height="541" alt="image" src="https://github.com/user-attachments/assets/dd96af33-1d40-4d52-8b15-c395ff57316d" />
+
+
+### Triangulation Process
+
+1.  **Form a Right-Triangle**: A virtual right-triangle is created between three key points: the target **Start Pixel (S)** on the wall, the **Image Center (C)** (representing the drone's current orientation), and a calculated **Drop-Down Point (T)** on the same vertical plane as the start pixel.
+
+2.  **Convert to 3D**: The pixel coordinates and depth value `(u, v, depth)` for the start point are converted into real-world 3D coordinates `(x, y, z)` using the camera's intrinsic parameters.
+
+3.  **Compute Positional Deltas**: The script calculates the required movement along each axis (`Δx`, `Δy`, `Δz`) to move the drone from its current position to the target start position.
+
+### Command Sequence
+
+The calculated deltas are translated directly into a sequence of drone commands, typically following this pattern:
+> move **forward/backward** (Δz) → move **left/right** (Δx) → move **up/down** (Δy) → **rotate** (θ)
+
+-   **Results**: This process achieves a one-shot alignment with the wall, preparing the drone to immediately begin scanning.
+-   **Advantage**: It completely eliminates the need for external fiducial markers (like QR codes or ArUco markers) or complex CNN-based object detectors for initial positioning.
 ## Setup
 
 1. Clone this repository:
@@ -81,4 +106,5 @@ See `requirements.txt` for the full list of Python dependencies.
 ## License
 
 [Your chosen license]
+
 
